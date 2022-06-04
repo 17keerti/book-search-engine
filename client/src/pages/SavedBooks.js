@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Jumbotron,
   Container,
@@ -7,9 +7,9 @@ import {
   Button,
 } from "react-bootstrap";
 
-import { getMe, deleteBook } from "../utils/API";
+// import { getMe, deleteBook } from "../utils/API";
 import Auth from "../utils/auth";
-import { removeBookId } from "../utils/localStorage";
+import { removeBookId, saveBookIds } from "../utils/localStorage";
 import { useQuery, useMutation } from "@apollo/client";
 import { QUERY_ME } from "../utils/queries";
 import { REMOVE_BOOK } from "../utils/mutations";
@@ -29,15 +29,17 @@ const SavedBooks = () => {
     }
 
     try {
-      const response = await deleteBook(bookId, token);
+      const response = await removeBook({
+        variables: { bookId: bookId },
+      });
 
       if (!response.ok) {
         throw new Error("something went wrong!");
       }
 
-      const updatedUser = await response.json();
-      setUserData(updatedUser);
-      // upon success, remove book's id from localStorage
+      // const updatedUser = await response.json();
+      // setUserData(updatedUser);
+      // // upon success, remove book's id from localStorage
       removeBookId(bookId);
     } catch (err) {
       console.error(err);
@@ -45,9 +47,12 @@ const SavedBooks = () => {
   };
 
   // if data isn't here yet, say so
-  if (!userDataLength) {
+  if (loading) {
     return <h2>LOADING...</h2>;
   }
+
+  const savedBookIds = userData.savedBooks.map((book) => book.bookId);
+  saveBookIds(savedBookIds);
 
   return (
     <>
