@@ -13,8 +13,8 @@ const resolvers = {
   },
 
   Mutation: {
-    addUser: async (parent, { username, email, password }) => {
-      const user = await User.create({ username, email, password });
+    addUser: async (parent, args) => {
+      const user = await User.create(args);
       const token = signToken(user);
 
       return { token, user };
@@ -35,12 +35,12 @@ const resolvers = {
       const token = signToken(user);
       return { token, user };
     },
-    saveBook: async (parent, args, context) => {
+    saveBook: async (parent, { bookData }, context) => {
       if (context.user) {
         return User.findOneAndUpdate(
           { _id: context.user._id },
           {
-            $addToSet: { savedBooks: args },
+            $addToSet: { savedBooks: bookData },
           },
           {
             new: true,
@@ -53,7 +53,7 @@ const resolvers = {
 
     removeBook: async (parent, { bookId }, context) => {
       if (context.user) {
-        return Profile.findOneAndUpdate(
+        return User.findOneAndUpdate(
           { _id: context.user._id },
           { $pull: { savedBooks: { bookId: bookId } } },
           { new: true }
