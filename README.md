@@ -11,9 +11,6 @@ This is a book search engine which allows user to search books and it also allow
 - [License](#license)
 - [Questions](#questions)
 
-## Deployment Link
-
-https://keerti-booksearchengine.herokuapp.com/
 
 ## Video
 
